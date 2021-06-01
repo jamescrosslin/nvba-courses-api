@@ -1,14 +1,14 @@
 {
   "development": {
-    "dialect": "mysql",
+    "dialect": "sqlite",
     "storage": "../fsjstd-restapi.db"
   },
   "test": {
-    "dialect": "mysql",
+    "dialect": "sqlite",
     "storage": "../fsjstd-restapi.db"
   },
   "production": {
-    "dialect": "mysql",
+    "dialect": "sqlite",
     "storage": "../fsjstd-restapi.db"
   }
 }
