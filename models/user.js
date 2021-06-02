@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -11,14 +9,26 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.hasMany(models.Course);
     }
+  }
+  const props = {
+    firstName: 'First name',
+    lastName: 'Last name',
+    emailAddress: 'Email address',
+    password: 'Password',
   };
-  User.init({
-    firstName: DataTypes.STRING,
-    lastName: DataTypes.STRING,
-    emailAddress: DataTypes.STRING,
-    password: DataTypes.STRING
-  }, {
+
+  for (let prop in props) {
+    const msg = `${props[prop]} must have a value`;
+    props[prop] = {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: { notNull: { msg }, notEmpty: { msg } },
+    };
+  }
+
+  User.init(props, {
     sequelize,
     modelName: 'User',
   });
