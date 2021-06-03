@@ -38,8 +38,8 @@ app.get('/', (req, res) => {
 });
 
 // setup user routes
-const userRoutes = require('./routes/user.js');
-app.use('/api/user', userRoutes);
+const usersRoutes = require('./routes/users.js');
+app.use('/api/users', usersRoutes);
 
 // setup courses routes
 const coursesRoutes = require('./routes/courses.js');

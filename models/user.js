@@ -39,7 +39,6 @@ module.exports = (sequelize, DataTypes) => {
 
   User.init(props, {
     sequelize,
-    modelName: 'User',
   });
   return User;
 };
