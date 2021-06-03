@@ -1,5 +1,5 @@
 const { Course, User } = require('../models');
-const { asyncHandler } = require('../util');
+const { authenticateUser, asyncHandler } = require('../util');
 const express = require('express');
 const router = express.Router();
 
@@ -12,10 +12,10 @@ router
     }),
   )
   .post(
+    authenticateUser,
     asyncHandler(async (req, res) => {
       const { title, description, estimatedTime, materialsNeeded, userId } = req.body;
       await Course.create({ title, description, estimatedTime, materialsNeeded, userId });
-
       res.status(201).send();
     }),
   );
@@ -39,6 +39,7 @@ router
     }),
   )
   .put(
+    authenticateUser,
     asyncHandler(async (req, res) => {
       const { title, description, estimatedTime, materialsNeeded } = req.body;
       await req.course.update({ title, description, estimatedTime, materialsNeeded });
@@ -46,6 +47,7 @@ router
     }),
   )
   .delete(
+    authenticateUser,
     asyncHandler(async (req, res) => {
       const didDelete = await req.course.destroy();
       if (didDelete) return res.status(204).send();
