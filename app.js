@@ -33,7 +33,7 @@ app.use(morgan('dev'));
 // setup a friendly greeting for the root route
 app.get('/', (req, res) => {
   res.json({
-    message: 'Welcome to the REST API project!',
+    message: 'Welcome to North Valley Business Academy course management system!',
   });
 });
 
@@ -43,7 +43,6 @@ app.use('/api/users', usersRoutes);
 
 // setup courses routes
 const coursesRoutes = require('./routes/courses.js');
-
 app.use('/api/courses', coursesRoutes);
 
 // send 404 if no other route matched
@@ -58,10 +57,10 @@ app.use((err, _req, res, _next) => {
   if (enableGlobalErrorLogging) {
     console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
   }
-
+  const errors = err.validationErrors || err.errors || [];
   res.status(err.status || 500).json({
     message: err.message,
-    error: {},
+    error: errors,
   });
 });
 
