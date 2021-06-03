@@ -22,7 +22,7 @@ router
 
 router.param('id', async (req, res, next, id) => {
   try {
-    req.course = await Course.findAll({ where: { id: req.courseId }, include: User });
+    req.course = await Course.findAll({ where: { id }, include: User });
     next();
   } catch (err) {
     err.message = 'Could not find course with that id';
@@ -38,13 +38,18 @@ router
       res.json(req.course);
     }),
   )
-  .put(async (req, res) => {
-    const { title, description, estimatedTime, materialsNeeded } = req.body;
-    await req.course.update({ title, description, estimatedTime, materialsNeeded });
-    res.status(204).send();
-  })
-  .delete(async (req, res) => {
-    await req.course.destroy();
-    res.status(204).send();
-  });
+  .put(
+    asyncHandler(async (req, res) => {
+      const { title, description, estimatedTime, materialsNeeded } = req.body;
+      await req.course.update({ title, description, estimatedTime, materialsNeeded });
+      res.status(204).send();
+    }),
+  )
+  .delete(
+    asyncHandler(async (req, res) => {
+      const didDelete = await req.course.destroy();
+      if (didDelete) return res.status(204).send();
+      throw new Error(`Couldn't delete`);
+    }),
+  );
 module.exports = router;
