@@ -29,10 +29,8 @@ module.exports = (sequelize, DataTypes) => {
       validate: { notNull: { msg }, notEmpty: { msg } },
     };
   }
-  props.emailAddress.validate = {
-    isEmail: { msg: 'Please include a valid email address' },
-    ...props.emailAddress.validate,
-  };
+  props.emailAddress.validate.isEmail = { msg: 'Please include a valid email address' };
+  props.emailAddress.unique = true;
 
   props.password = {
     set(val) {
