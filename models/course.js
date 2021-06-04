@@ -16,7 +16,17 @@ module.exports = (sequelize, DataTypes) => {
   function makeRequireOptions(...fields) {
     return fields.reduce((option, prop) => {
       const msg = `${prop[0].toUpperCase() + prop.slice(1)} must have a value`;
-      option[prop] = { allowNull: false, validate: { notNull: { msg }, notEmpty: { msg } } };
+      option[prop] = {
+        allowNull: false,
+        validate: {
+          notNull: {
+            msg,
+          },
+          notEmpty: {
+            msg,
+          },
+        },
+      };
       return option;
     }, {});
   }

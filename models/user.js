@@ -33,12 +33,12 @@ module.exports = (sequelize, DataTypes) => {
   props.emailAddress.unique = true;
 
   props.password = {
+    ...props.password,
     set(val) {
       if (!val) return '';
       const hashedPassword = bcrypt.hashSync(val, 10);
       this.setDataValue('password', hashedPassword);
     },
-    ...props.password,
   };
 
   User.init(props, {
