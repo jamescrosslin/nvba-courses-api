@@ -49,7 +49,7 @@ module.exports = {
             message = `Authentication failed for username: ${user.emailAddress}`;
           }
         } else {
-          message = `User not found for username: ${credentials.emailAddress}`;
+          message = `User not found for username: ${credentials.name}`;
         }
       } else {
         // If user authentication failed...
