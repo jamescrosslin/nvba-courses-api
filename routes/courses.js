@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 
 router
+  // the following chained methods will all belong to the '/' path
   .route('/')
   .get(
     asyncHandler(async (req, res) => {
@@ -11,7 +12,14 @@ router
         attributes: {
           exclude: ['createdAt', 'updatedAt'],
         },
-        include: User,
+        include: [
+          {
+            model: User,
+            attributes: {
+              exclude: ['password', 'createdAt', 'updatedAt'],
+            },
+          },
+        ],
       });
       res.json(courses);
     }),
@@ -19,6 +27,11 @@ router
   .post(
     authenticateUser,
     asyncHandler(async (req, res) => {
+      /* 
+        here we're destructuring unique props from req.body instead of spreading
+        all of req.body to prevent SQL injection or other malicious activity through
+        unanticipated props 
+      */
       const { title, description, estimatedTime, materialsNeeded, userId } = req.body;
       const { id } = await Course.create({
         title,
@@ -27,18 +40,23 @@ router
         materialsNeeded,
         userId,
       });
-      res.location(`/${id}`);
-      res.status(201).send();
+      res.location(`/${id}`).status(201).send();
     }),
   );
 
+/*
+  The param router method allows us to execute a bit of code for all routes
+  that have the id route parameter in one place instead of performing action
+  individually in each route handler
+*/
 router.param('id', async (req, res, next, id) => {
   try {
+    // finds course by primary key which is :id route parameter
+    // saves found course to req.course to travel along middleware
     req.course = await Course.findByPk(id, {
       attributes: {
         exclude: ['createdAt', 'updatedAt'],
       },
-      include: User,
     });
     next();
   } catch (err) {
