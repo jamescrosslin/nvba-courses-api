@@ -7,7 +7,12 @@ router
   .route('/')
   .get(
     asyncHandler(async (req, res) => {
-      const courses = await Course.findAll({ include: User });
+      const courses = await Course.findAll({
+        attributes: {
+          exclude: ['createdAt', 'updatedAt'],
+        },
+        include: User,
+      });
       res.json(courses);
     }),
   )
@@ -22,7 +27,12 @@ router
 
 router.param('id', async (req, res, next, id) => {
   try {
-    req.course = await Course.findAll({ where: { id }, include: User });
+    req.course = await Course.findByPk(id, {
+      attributes: {
+        exclude: ['createdAt', 'updatedAt'],
+      },
+      include: User,
+    });
     next();
   } catch (err) {
     err.message = 'Could not find course with that id';
