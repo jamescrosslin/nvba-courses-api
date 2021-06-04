@@ -14,6 +14,9 @@ const app = express();
 // setup morgan which gives us http request logging
 app.use(morgan('dev'));
 
+// parse incoming JSON payloads
+app.use(express.json());
+
 // Link to database
 (async () => {
   try {
