@@ -8,7 +8,11 @@ router
   .get(
     authenticateUser,
     asyncHandler(async (req, res) => {
-      const users = await User.findAll();
+      const users = await User.findAll({
+        attributes: {
+          exclude: ['password', 'createdAt', 'updatedAt'],
+        },
+      });
       res.json(users);
     }),
   )
