@@ -60,7 +60,7 @@ app.use((err, _req, res, _next) => {
   if (enableGlobalErrorLogging) {
     console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
   }
-  const errors = err.validationErrors || err.errors || [];
+  const errors = err.validationErrors || err.errors || ['No further information'];
   res.status(err.status || 500).json({
     message: err.message,
     error: errors,
