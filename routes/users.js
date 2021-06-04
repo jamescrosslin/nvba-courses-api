@@ -8,7 +8,7 @@ router
   .get(
     authenticateUser,
     asyncHandler(async (req, res) => {
-      const users = await User.findAll({
+      const users = await User.findByPk(req.currentUser.id, {
         attributes: {
           exclude: ['password', 'createdAt', 'updatedAt'],
         },
@@ -20,6 +20,7 @@ router
     asyncHandler(async (req, res) => {
       const { firstName, lastName, emailAddress, password } = req.body;
       await User.create({ firstName, lastName, emailAddress, password });
+      res.location('/');
       res.status(201).json({ message: 'User Created' });
     }),
   );
