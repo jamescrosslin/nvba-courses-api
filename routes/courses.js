@@ -20,7 +20,14 @@ router
     authenticateUser,
     asyncHandler(async (req, res) => {
       const { title, description, estimatedTime, materialsNeeded, userId } = req.body;
-      await Course.create({ title, description, estimatedTime, materialsNeeded, userId });
+      const { id } = await Course.create({
+        title,
+        description,
+        estimatedTime,
+        materialsNeeded,
+        userId,
+      });
+      res.location(`/${id}`);
       res.status(201).send();
     }),
   );
@@ -51,6 +58,12 @@ router
   .put(
     authenticateUser,
     asyncHandler(async (req, res) => {
+      if (req.currentUser.id !== req.course.userId) {
+        const error = new Error();
+        error.message = "Cannot delete another user's course";
+        error.status = 403;
+        throw error;
+      }
       const { title, description, estimatedTime, materialsNeeded } = req.body;
       await req.course.update({ title, description, estimatedTime, materialsNeeded });
       res.status(204).send();
