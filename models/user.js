@@ -29,8 +29,14 @@ module.exports = (sequelize, DataTypes) => {
       validate: { notNull: { msg }, notEmpty: { msg } },
     };
   }
+  props.emailAddress.validate = {
+    isEmail: { msg: 'Please include a valid email address' },
+    ...props.emailAddress.validate,
+  };
+
   props.password = {
     set(val) {
+      if (!val) return '';
       const hashedPassword = bcrypt.hashSync(val, 10);
       this.setDataValue('password', hashedPassword);
     },
