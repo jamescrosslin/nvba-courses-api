@@ -16,16 +16,20 @@ if (config.use_env_variable) {
 }
 
 fs
+  // grabs all files in the containing directory, i.e. /models
   .readdirSync(__dirname)
-  .filter(file => {
-    return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
+  // filter retains files that are not hidden, are not this file, and are js files
+  .filter((file) => {
+    return file.indexOf('.') !== 0 && file !== basename && file.slice(-3) === '.js';
   })
-  .forEach(file => {
+  .forEach((file) => {
+    // calls the function that each model file is exporting, saves return to model variable
     const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+    // assigns the model to db object as a property that is the name of the model
     db[model.name] = model;
   });
-
-Object.keys(db).forEach(modelName => {
+// calls associate method for each model on db
+Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }

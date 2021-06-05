@@ -1,26 +1,28 @@
 const { Course, User } = require('../models');
-const { authenticateUser, asyncHandler } = require('../util');
+const { authenticateUser, asyncHandler, checkOwnership } = require('../middleware');
 const express = require('express');
 const router = express.Router();
+
+const courseQueryOptions = {
+  attributes: {
+    exclude: ['createdAt', 'updatedAt'],
+  },
+  include: [
+    {
+      model: User,
+      attributes: {
+        exclude: ['password', 'createdAt', 'updatedAt'],
+      },
+    },
+  ],
+};
 
 router
   // the following chained methods will all belong to the '/' path
   .route('/')
   .get(
     asyncHandler(async (req, res) => {
-      const courses = await Course.findAll({
-        attributes: {
-          exclude: ['createdAt', 'updatedAt'],
-        },
-        include: [
-          {
-            model: User,
-            attributes: {
-              exclude: ['password', 'createdAt', 'updatedAt'],
-            },
-          },
-        ],
-      });
+      const courses = await Course.findAll(courseQueryOptions);
       res.json(courses);
     }),
   )
@@ -30,7 +32,7 @@ router
       /* 
         here we're destructuring unique props from req.body instead of spreading
         all of req.body to prevent SQL injection or other malicious activity through
-        unanticipated props 
+        unanticipated props like aggregating functions
       */
       const { title, description, estimatedTime, materialsNeeded, userId } = req.body;
       const { id } = await Course.create({
@@ -52,12 +54,8 @@ router
 router.param('id', async (req, res, next, id) => {
   try {
     // finds course by primary key which is :id route parameter
-    // saves found course to req.course to travel along middleware
-    req.course = await Course.findByPk(id, {
-      attributes: {
-        exclude: ['createdAt', 'updatedAt'],
-      },
-    });
+    // saves found course to req.course to travel along through middleware
+    req.course = await Course.findByPk(id, courseQueryOptions);
     next();
   } catch (err) {
     err.message = 'Could not find course with that id';
@@ -68,20 +66,16 @@ router.param('id', async (req, res, next, id) => {
 
 router
   .route('/:id')
-  .get(
-    asyncHandler(async (req, res) => {
-      res.json(req.course);
-    }),
-  )
+  .get(asyncHandler(async (req, res) => res.json(req.course)))
   .put(
     authenticateUser,
+    checkOwnership,
     asyncHandler(async (req, res) => {
-      if (req.currentUser.id !== req.course.userId) {
-        const error = new Error();
-        error.message = "Cannot delete another user's course";
-        error.status = 403;
-        throw error;
-      }
+      /* 
+        here we're destructuring unique props from req.body instead of spreading
+        all of req.body to prevent malicious activity through
+        unanticipated props like aggregating functions
+      */
       const { title, description, estimatedTime, materialsNeeded } = req.body;
       await req.course.update({ title, description, estimatedTime, materialsNeeded });
       res.status(204).send();
@@ -89,6 +83,7 @@ router
   )
   .delete(
     authenticateUser,
+    checkOwnership,
     asyncHandler(async (req, res) => {
       const didDelete = await req.course.destroy();
       if (didDelete) return res.status(204).send();

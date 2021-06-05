@@ -13,9 +13,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
+  // creates requirement props for each field passed in
   function makeRequireOptions(...fields) {
+    // takes an array of field names and returns an object
     return fields.reduce((option, prop) => {
       const msg = `${prop[0].toUpperCase() + prop.slice(1)} must have a value`;
+      // adds field to the object as a property, adds validators/contraints
       option[prop] = {
         allowNull: false,
         validate: {

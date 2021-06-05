@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     password: 'Password',
   };
 
+  // assigns shared values to all model properties
   for (let prop in props) {
     const msg = `${props[prop]} must have a value`;
     props[prop] = {
@@ -29,11 +30,14 @@ module.exports = (sequelize, DataTypes) => {
       validate: { notNull: { msg }, notEmpty: { msg } },
     };
   }
+
+  /* unshared props for email and password added below */
   props.emailAddress.validate.isEmail = { msg: 'Please include a valid email address' };
   props.emailAddress.unique = true;
 
   props.password = {
     ...props.password,
+    // add method that sets the value of password after encryption
     set(val) {
       if (!val) return '';
       const hashedPassword = bcrypt.hashSync(val, 10);
