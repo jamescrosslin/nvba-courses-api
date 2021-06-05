@@ -11,10 +11,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "eslint": "^7.27.0",
-    "nodemon": "^1.18.3"
+    "eslint": "^7.27.0"
   },
   "dependencies": {
+    "nodemon": "^1.18.3",
     "basic-auth": "^2.0.1",
     "bcrypt": "^5.0.1",
     "cross-env": "^7.0.2",
