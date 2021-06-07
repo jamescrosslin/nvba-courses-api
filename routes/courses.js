@@ -42,7 +42,7 @@ router
         materialsNeeded,
         userId,
       });
-      res.location(`/${id}`).status(201).send();
+      res.location(`/api/courses/${id}`).status(201).send();
     }),
   );
 
